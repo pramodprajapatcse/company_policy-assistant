@@ -24,6 +24,7 @@ RUN python3 -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('
 # Copy application
 COPY app/ ./app/
 COPY data/ ./data/
+COPY static/ ./static/
 
 # Create necessary directories
 RUN mkdir -p /app/data/processed /app/logs
