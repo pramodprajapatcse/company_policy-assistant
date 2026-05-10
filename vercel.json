@@ -2,7 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "frontend-vercel/**",
+      "src": "frontend-vercel/index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "frontend-vercel/styles.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "frontend-vercel/script.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "frontend-vercel/vercel.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "frontend-vercel/README.md",
       "use": "@vercel/static"
     }
   ],
@@ -11,5 +27,7 @@
       "src": "/(.*)",
       "dest": "/frontend-vercel/$1"
     }
-  ]
+  ],
+  "functions": {},
+  "regions": ["iad1"]
 }
