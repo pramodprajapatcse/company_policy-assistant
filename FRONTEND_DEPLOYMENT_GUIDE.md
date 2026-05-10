@@ -1,122 +1,111 @@
-# Frontend Deployment Guide - Vercel
+# Frontend Deployment - Currently Served from Render Backend
 
-## Overview
-Your AI Policy Assistant frontend is now ready for deployment on Vercel. The frontend consists of a modern web application that communicates with your Render-deployed backend.
+## 📌 Note
 
-## Files Created
-- `index.html` - Main HTML structure with chat interface
-- `styles.css` - Mahindra-branded styling with responsive design
-- `script.js` - JavaScript for API calls and chat functionality
-- `vercel.json` - Vercel deployment configuration
-- `README.md` - Documentation for the frontend
+The frontend is **no longer deployed separately**. It is now served directly from the Render backend at:
+### 🌐 https://company-project-f3ae.onrender.com
 
-## Deployment Steps
+---
 
-### Step 1: Prepare Your Repository
-1. Create a new GitHub repository for the frontend
-2. Copy the `frontend-vercel` folder contents to the repository
-3. Commit and push the files
+## Why Consolidated Deployment?
 
-### Step 2: Deploy on Vercel
-1. Go to [vercel.com](https://vercel.com) and sign in
-2. Click "New Project"
-3. Import your GitHub repository
-4. Vercel will automatically detect the configuration
-5. Click "Deploy"
+✅ **Advantages:**
+- Single deployment to manage
+- No CORS issues
+- Faster response times
+- Easier environment management
+- Reduced deployment complexity
+- Unified logging and monitoring
 
-### Step 3: Configure Environment (Optional)
-If you need environment variables, add them in Vercel dashboard:
-- No environment variables needed for basic functionality
-- API URL is hardcoded in `script.js`
+---
 
-## Testing the Deployment
+## Frontend Files
 
-### Local Testing
-The frontend is currently running locally at: http://localhost:8000
+The frontend is located in the `static/` directory:
 
-### API Connection
-- Backend URL: `https://company-project-f3ae.onrender.com/api/v1`
-- Endpoint: `POST /api/v1/policy/query`
-- The frontend will call this endpoint for policy queries
-
-## Features Included
-
-### UI Components
-- ✅ Mahindra-branded header with logo
-- ✅ Chat interface with message bubbles
-- ✅ Loading indicators
-- ✅ Responsive design for mobile/desktop
-- ✅ Policy categories sidebar
-- ✅ Quick question tags
-
-### Functionality
-- ✅ Real-time chat with backend API
-- ✅ Error handling for API failures
-- ✅ Auto-scrolling chat messages
-- ✅ Keyboard shortcuts (Enter to send)
-
-## Customization Options
-
-### Change Backend URL
-Edit `script.js` line 2:
-```javascript
-const API_BASE_URL = 'YOUR_NEW_BACKEND_URL/api/v1';
+```
+static/
+├── index.html              # Chat UI
+├── styles.css              # Mahindra branding & styling
+├── script.js               # Chat logic & API integration
+└── MAHINDRALOGO.jpeg       # Company logo
 ```
 
-### Modify Branding
-Edit CSS custom properties in `styles.css`:
-```css
-:root {
-  --mahindra-red: #YOUR_COLOR;
-  --mahindra-gray: #YOUR_COLOR;
-  /* ... */
+---
+
+## Making Frontend Changes
+
+### Edit HTML/CSS/JavaScript
+1. Edit files in `static/` folder
+2. Commit and push to GitHub
+3. Render auto-deploys (~5 minutes)
+
+### Example Changes
+```bash
+# Edit styles
+vim static/styles.css
+
+# Edit chat interface
+vim static/index.html
+
+# Commit and deploy
+git add static/
+git commit -m "Update frontend styles"
+git push origin main
+```
+
+---
+
+## Features
+
+- ✅ Real-time chat interface
+- ✅ Streaming responses (ChatGPT-style)
+- ✅ Policy categories sidebar
+- ✅ Quick question tags
+- ✅ Mahindra branding
+- ✅ Responsive design (mobile & desktop)
+- ✅ Loading indicators
+- ✅ Error handling
+
+---
+
+## Testing Locally
+
+```bash
+# Start the FastAPI backend
+python -m uvicorn app.main:app --reload
+
+# Visit http://localhost:8000
+```
+
+The frontend will automatically call the local API at `/api/v1/`.
+
+---
+
+## API Integration
+
+The frontend communicates with:
+- **Non-streaming**: `POST /api/v1/query`
+- **Streaming**: `POST /api/v1/query/stream` (Server-Sent Events)
+
+Both endpoints accept:
+```json
+{
+  "question": "What is the leave policy?",
+  "user_id": "user123",
+  "top_k": 5
 }
 ```
 
-### Add New Features
-- Extend the sidebar with more policy categories
-- Add file upload functionality
-- Implement user authentication
-- Add chat history persistence
+---
 
-## Troubleshooting
+## Production Access
 
-### Common Issues
+**Live URL**: https://company-project-f3ae.onrender.com
 
-1. **API Connection Failed**
-   - Check if backend is running on Render
-   - Verify the API_BASE_URL in script.js
-   - Check browser console for CORS errors
+The frontend automatically uses the production backend API.
 
-2. **Styling Issues**
-   - Clear browser cache
-   - Check CSS file is loading correctly
-   - Verify Font Awesome CDN is accessible
+---
 
-3. **Deployment Issues**
-   - Ensure all files are committed to GitHub
-   - Check Vercel build logs for errors
-   - Verify vercel.json configuration
-
-### Browser Compatibility
-- Chrome 70+
-- Firefox 65+
-- Safari 12+
-- Edge 79+
-
-## Next Steps
-
-1. **Deploy the frontend** using the steps above
-2. **Test the full application** by asking policy questions
-3. **Customize the UI** to match your exact requirements
-4. **Add analytics** if needed for usage tracking
-
-## Support
-
-If you encounter issues:
-1. Check the browser developer console for errors
-2. Verify backend API is responding correctly
-3. Review Vercel deployment logs
-4. Check network tab for failed API calls
-
-Your AI Policy Assistant is now ready for production use! 🚀
+**Last Updated:** May 11, 2026  
+**Deployment Status:** ✅ Serving from Render Backend

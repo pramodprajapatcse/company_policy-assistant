@@ -1,64 +1,107 @@
-# Company Policy RAG Assistant - Deployment Guide
+# Deployment Guide - Render
 
-## Overview
-This guide covers deploying the Company Policy RAG Assistant to production platforms.
+## ✅ Current Status: Successfully Deployed on Render
 
-## Prerequisites
-- GitHub repository: https://github.com/pramodprajapatcse/Company_Project
-- API Keys: NVIDIA
-- Docker knowledge (optional)
+Your AI Policy Assistant is **live and running** at:
+### 🌐 https://company-project-f3ae.onrender.com
 
-## Deployment Options
+---
 
-### Option 1: Render (Recommended - Free Tier Available)
-1. Go to https://render.com
-2. Sign up/Login with GitHub
-3. Click "New" → "Web Service"
-4. Connect your GitHub repo: `pramodprajapatcse/Company_Project`
-5. Configure:
-   - **Name**: `company-policy-rag`
-   - **Environment**: `Docker`
-   - **Dockerfile Path**: `./docker/Dockerfile` ✅ **Correct**
-   - **Root Directory**: Leave empty
-6. Add Environment Variables:
-   ```
-   NVIDIA_API_KEY=your-nvidia-api-key-here
-   NVIDIA_API_BASE_URL=https://integrate.api.nvidia.com/v1
-   LLM_PROVIDER=nvidia
-   SECRET_KEY=your-production-secret-key-here
-   ALLOWED_USERS=your-email@company.com
-   ```
-7. Click "Create Web Service"
-8. Wait for deployment (5-10 minutes)
+## 📋 What's Deployed
 
-### Option 2: Railway
-1. Go to https://railway.app
-2. Connect GitHub repo
-3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables (same as above)
-6. Deploy
+- **Backend API** - FastAPI endpoints for policy queries
+- **Frontend UI** - Chat interface served at root URL
+- **Documents** - 100+ policy documents indexed
+- **Vector Search** - Hybrid search with ChromaDB
+- **LLM Integration** - NVIDIA API for responses
+- **Streaming** - Real-time response streaming
 
-### Option 3: Fly.io
-1. Install Fly CLI: `brew install flyctl`
-2. Login: `fly auth login`
-3. Launch: `fly launch`
-4. Set secrets: `fly secrets set NVIDIA_API_KEY=your-key-here`
-5. Deploy: `fly deploy`
+---
 
-## Environment Variables Required
-- `NVIDIA_API_KEY`: Your NVIDIA API key
-- `NVIDIA_API_BASE_URL`: NVIDIA integration base URL (default: `https://integrate.api.nvidia.com/v1`)
-- `LLM_PROVIDER`: Set to `nvidia` or `local`
-- `SECRET_KEY`: Random string for JWT tokens
-- `ALLOWED_USERS`: Comma-separated list of allowed email addresses
+## 🔐 Environment Configuration
 
-## Post-Deployment
-1. Access your deployed app URL
-2. Test the authentication with your email
-3. Verify policy queries work correctly
+The following environment variables are configured on Render:
 
-## Troubleshooting
-- Check logs in your deployment platform
-- Ensure all environment variables are set
-- Verify Dockerfile path is correct: `./docker/Dockerfile`
+```
+NVIDIA_API_KEY          # Your NVIDIA API key
+LLM_PROVIDER           # Set to: nvidia
+NVIDIA_API_BASE_URL    # https://integrate.api.nvidia.com/v1
+LOG_LEVEL              # INFO (default)
+```
+
+---
+
+## 📊 Monitoring
+
+### View Logs
+1. Go to https://render.com/dashboard
+2. Click **company-policy-assistant**
+3. Click **Logs** tab
+4. See real-time application logs
+
+### Health Check
+```bash
+curl https://company-project-f3ae.onrender.com/api/v1/health
+```
+
+---
+
+## 🔄 Auto-Deployment
+
+Changes are automatically deployed when you push to GitHub:
+
+```bash
+git add .
+git commit -m "Your changes"
+git push origin main
+```
+
+Render will automatically:
+1. Pull changes from GitHub
+2. Build Docker image
+3. Deploy new version
+4. Restart the service
+
+---
+
+## 📝 Making Changes
+
+### Update Policy Documents
+1. Add `.txt` files to `data/policies/`
+2. Commit and push to GitHub
+3. Render auto-deploys with updated documents
+
+### Update Frontend
+1. Edit `static/index.html`, `static/styles.css`, or `static/script.js`
+2. Commit and push to GitHub
+3. Changes live in ~5 minutes
+
+### Update Backend
+1. Edit files in `app/` directory
+2. Commit and push to GitHub
+3. Render rebuilds and deploys
+
+---
+
+## 🐛 Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| 500 API error | Check NVIDIA_API_KEY in Render settings |
+| Deployment failed | Check build logs in Render dashboard |
+| Streaming not working | Verify endpoint `/api/v1/query/stream` exists |
+| Logo not showing | Check `static/MAHINDRALOGO.jpeg` exists |
+
+---
+
+## 📚 Reference Guides
+
+- **Full Documentation**: See `README.md`
+- **Technical Details**: See `RENDER_DEPLOYMENT_GUIDE.md`
+- **API Reference**: See `README.md` → API Endpoints section
+
+---
+
+**Last Updated:** May 11, 2026  
+**Deployment Platform:** Render  
+**Status:** ✅ Live
