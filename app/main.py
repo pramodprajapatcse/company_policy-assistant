@@ -51,7 +51,9 @@ app.include_router(auth_router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def startup_event():
-    """Load documents on startup"""
+    """Load documents on startup with memory optimization"""
+    import gc
+    
     logger.info(" Starting up RAG Assistant...")
 
     try:
@@ -79,14 +81,25 @@ async def startup_event():
             logger.error(" No chunks created — check document content or chunking logic")
             return
 
-        # Add to vector DB
-        embedding_service.add_documents(chunked_docs)
+        # Cleanup temporary data before indexing
+        del documents
+        gc.collect()
+        logger.info(" Memory cleanup after chunking")
+
+        # Add to vector DB with batching
+        embedding_service.add_documents(chunked_docs, batch_size=10)
         logger.info(" Added chunks to vector database")
+        gc.collect()
 
         # Build BM25 index
         retrieval_service.build_bm25_index(chunked_docs)
         logger.info(" BM25 index built successfully")
+        gc.collect()
 
+        # Cleanup
+        del chunked_docs
+        gc.collect()
+        
         logger.info(" Document indexing completed successfully")
 
     except Exception as e:

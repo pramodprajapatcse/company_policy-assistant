@@ -23,11 +23,22 @@ class RetrievalService:
         self.tokenized_docs = []
         
     def build_bm25_index(self, documents: List[Dict[str, Any]]):
-        """Build BM25 index for keyword search"""
+        """Build BM25 index for keyword search with memory optimization"""
+        import gc
+        
         self.documents = documents
-        self.tokenized_docs = [word_tokenize(doc["content"].lower()) for doc in documents]
+        self.tokenized_docs = []
+        
+        # Tokenize documents in a memory-efficient way
+        for i, doc in enumerate(documents):
+            self.tokenized_docs.append(word_tokenize(doc["content"].lower()))
+            # Periodic cleanup to avoid memory buildup during tokenization
+            if (i + 1) % 20 == 0:
+                gc.collect()
+        
         self.bm25_index = BM25Okapi(self.tokenized_docs)
         logger.info(f"Built BM25 index with {len(documents)} documents")
+        gc.collect()
     
     def bm25_search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """Perform BM25 keyword search"""

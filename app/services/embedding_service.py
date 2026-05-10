@@ -92,41 +92,53 @@ class EmbeddingService:
 
         return self.model.encode(texts, convert_to_numpy=True)
 
-    def add_documents(self, documents: List[dict]):
-        """Add documents to vector database"""
+    def add_documents(self, documents: List[dict], batch_size: int = 10):
+        """Add documents to vector database in batches to reduce memory usage"""
+        import gc
+        
         try:
             if not documents:
                 return
 
-            # Generate unique IDs
-            ids = [f"doc_{i}_{hash(doc['content'])}" for i, doc in enumerate(documents)]
+            total_added = 0
+            for batch_start in range(0, len(documents), batch_size):
+                batch_end = min(batch_start + batch_size, len(documents))
+                batch = documents[batch_start:batch_end]
 
-            # Extract texts and metadata
-            texts = [doc["content"] for doc in documents]
-            metadatas = [doc.get("metadata", {}) for doc in documents]
+                # Generate unique IDs
+                ids = [f"doc_{i}_{hash(doc['content'])}" for i, doc in enumerate(batch)]
 
-            # Generate embeddings
-            try:
-                embeddings = self.generate_embeddings(texts)
-            except Exception as e:
-                logger.warning("Embedding generation failed: %s", e)
-                if config.LLM_PROVIDER.lower() == "nvidia":
-                    logger.info("Falling back to local embeddings and retrying")
-                    self.model = self._load_local_model()
+                # Extract texts and metadata
+                texts = [doc["content"] for doc in batch]
+                metadatas = [doc.get("metadata", {}) for doc in batch]
+
+                # Generate embeddings
+                try:
                     embeddings = self.generate_embeddings(texts)
-                else:
-                    raise
+                except Exception as e:
+                    logger.warning("Embedding generation failed: %s", e)
+                    if config.LLM_PROVIDER.lower() == "nvidia":
+                        logger.info("Falling back to local embeddings and retrying")
+                        self.model = self._load_local_model()
+                        embeddings = self.generate_embeddings(texts)
+                    else:
+                        raise
 
-            # Add to ChromaDB
-            self.collection.add(
-                embeddings=embeddings.tolist(),
-                documents=texts,
-                metadatas=metadatas,
-                ids=ids
-            )
-            logger.info(f"Added {len(documents)} documents to vector DB")
-
+                # Add to ChromaDB
+                self.collection.add(
+                    embeddings=embeddings.tolist(),
+                    documents=texts,
+                    metadatas=metadatas,
+                    ids=ids
+                )
+                total_added += len(batch)
+                logger.info(f"Added batch {batch_start//batch_size + 1}: {len(batch)} documents to vector DB")
+                
+                # Cleanup batch memory
+                del embeddings, texts, metadatas, ids
+                gc.collect()
             
+            logger.info(f"Completed: {total_added} total documents added to vector DB")
 
         except Exception as e:
             logger.error(f" Error adding documents: {e}")
