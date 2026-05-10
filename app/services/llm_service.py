@@ -1,5 +1,6 @@
 from openai import OpenAI
 import logging
+import re
 from app.config import config
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,8 @@ Instructions:
 - Use complete sentences and flow naturally from one point to the next
 - Do NOT use bullet points, numbered lists, or asterisks (*)
 - Do NOT include section headers or references
-- Vary your wording and phrasing each time the same question is asked - explain the same information using different words and sentence structures
+- Answer the question once and avoid restating the same ideas. Do not repeat the same content in multiple sentences.
+- Vary your wording and phrasing each time the same question is asked
 - If information is not found in context, say: "I don't have that information in the policy documents"
 - Keep your response helpful and easy to understand
 """
@@ -50,7 +52,10 @@ Instructions:
                     {"role": "system", "content": "You are a policy assistant."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,  # Slightly higher for more variety
+                temperature=0.55,
+                top_p=0.95,
+                frequency_penalty=0.5,
+                presence_penalty=0.3,
                 max_tokens=500,
                 stream=True  # Enable streaming
             )
@@ -60,7 +65,8 @@ Instructions:
             for chunk in response:
                 if chunk.choices[0].delta.content:
                     full_response += chunk.choices[0].delta.content
-            
+
+            full_response = self._remove_redundant_repetition(full_response)
             logger.info(f"LLM Response generated successfully")
             return full_response
 
@@ -87,3 +93,31 @@ Instructions:
         except Exception as e:
             logger.error(f"Error in _format_context: {e}", exc_info=True)
             raise
+
+    def _remove_redundant_repetition(self, text: str) -> str:
+        try:
+            # Remove exact duplicate paragraphs
+            paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+            unique_paragraphs = []
+            seen = set()
+            for paragraph in paragraphs:
+                if paragraph not in seen:
+                    unique_paragraphs.append(paragraph)
+                    seen.add(paragraph)
+
+            cleaned_text = "\n\n".join(unique_paragraphs)
+
+            # Remove exact adjacent duplicate sentences
+            sentences = re.split(r'(?<=[.!?])\s+', cleaned_text)
+            cleaned_sentences = []
+            previous_sentence = None
+            for sentence in sentences:
+                sentence = sentence.strip()
+                if sentence and sentence != previous_sentence:
+                    cleaned_sentences.append(sentence)
+                    previous_sentence = sentence
+
+            return " ".join(cleaned_sentences)
+        except Exception as e:
+            logger.warning(f"Failed to clean repeated response text: {e}", exc_info=True)
+            return text
