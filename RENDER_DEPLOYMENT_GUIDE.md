@@ -31,6 +31,7 @@ Your AI Policy Assistant is now configured for complete deployment on Render wit
 4. Configure the service:
    - **Name**: `company-policy-assistant`
    - **Environment**: `Python 3`
+   - **Python Version**: set to `3.9.17` if available, or add a root `.python-version` file with `3.9.17`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
