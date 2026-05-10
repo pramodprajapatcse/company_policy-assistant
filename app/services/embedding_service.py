@@ -1,6 +1,5 @@
 from typing import List
 import numpy as np
-from sentence_transformers import SentenceTransformer
 import chromadb
 from app.config import config
 import logging
@@ -11,8 +10,10 @@ logger = logging.getLogger(__name__)
 class EmbeddingService:
     def __init__(self):
         # Load embedding model
-        self.model = SentenceTransformer(config.EMBEDDING_MODEL)
-        self.vector_dimension = self.model.get_sentence_embedding_dimension()
+        self.model = self._load_embedding_model()
+        self.vector_dimension = None
+        if hasattr(self.model, "get_sentence_embedding_dimension"):
+            self.vector_dimension = self.model.get_sentence_embedding_dimension()
 
         # ✅ NEW ChromaDB client (FIXED)
         self.client = chromadb.PersistentClient(
@@ -27,8 +28,28 @@ class EmbeddingService:
 
         logger.info("Embedding service initialized successfully")
 
+    def _load_embedding_model(self):
+        if config.LLM_PROVIDER == "openai" and config.OPENAI_API_KEY:
+            from langchain.embeddings import OpenAIEmbeddings
+
+            logger.info("Using OpenAI embeddings for vector generation")
+            return OpenAIEmbeddings(
+                openai_api_key=config.OPENAI_API_KEY,
+                model="text-embedding-3-small"
+            )
+
+        # Fallback to local sentence-transformers model
+        from sentence_transformers import SentenceTransformer
+
+        logger.info(f"Loading local sentence-transformers model: {config.EMBEDDING_MODEL}")
+        return SentenceTransformer(config.EMBEDDING_MODEL)
+
     def generate_embeddings(self, texts: List[str]) -> np.ndarray:
         """Generate embeddings for texts"""
+        if hasattr(self.model, "embed_documents"):
+            embeddings = self.model.embed_documents(texts)
+            return np.array(embeddings)
+
         return self.model.encode(texts, convert_to_numpy=True)
 
     def add_documents(self, documents: List[dict]):
