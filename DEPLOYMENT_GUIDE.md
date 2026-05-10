@@ -5,7 +5,7 @@ This guide covers deploying the Company Policy RAG Assistant to production platf
 
 ## Prerequisites
 - GitHub repository: https://github.com/pramodprajapatcse/Company_Project
-- API Keys: OpenAI, Gemini, NVIDIA (optional)
+- API Keys: NVIDIA
 - Docker knowledge (optional)
 
 ## Deployment Options
@@ -22,10 +22,9 @@ This guide covers deploying the Company Policy RAG Assistant to production platf
    - **Root Directory**: Leave empty
 6. Add Environment Variables:
    ```
-   OPENAI_API_KEY=your-openai-api-key-here
-   GEMINI_API_KEY=your-gemini-api-key-here
    NVIDIA_API_KEY=your-nvidia-api-key-here
-   LLM_PROVIDER=openai
+   NVIDIA_API_BASE_URL=https://integrate.api.nvidia.com/v1
+   LLM_PROVIDER=nvidia
    SECRET_KEY=your-production-secret-key-here
    ALLOWED_USERS=your-email@company.com
    ```
@@ -44,14 +43,13 @@ This guide covers deploying the Company Policy RAG Assistant to production platf
 1. Install Fly CLI: `brew install flyctl`
 2. Login: `fly auth login`
 3. Launch: `fly launch`
-4. Set secrets: `fly secrets set OPENAI_API_KEY=your-key-here`
+4. Set secrets: `fly secrets set NVIDIA_API_KEY=your-key-here`
 5. Deploy: `fly deploy`
 
 ## Environment Variables Required
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `GEMINI_API_KEY`: Your Google Gemini API key (optional)
-- `NVIDIA_API_KEY`: Your NVIDIA API key (optional)
-- `LLM_PROVIDER`: Set to "openai", "gemini", or "nvidia"
+- `NVIDIA_API_KEY`: Your NVIDIA API key
+- `NVIDIA_API_BASE_URL`: NVIDIA integration base URL (default: `https://integrate.api.nvidia.com/v1`)
+- `LLM_PROVIDER`: Set to `nvidia` or `local`
 - `SECRET_KEY`: Random string for JWT tokens
 - `ALLOWED_USERS`: Comma-separated list of allowed email addresses
 

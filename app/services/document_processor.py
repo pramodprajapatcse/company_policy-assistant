@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from pathlib import Path
 import json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 import docx2txt
 import pandas as pd
 

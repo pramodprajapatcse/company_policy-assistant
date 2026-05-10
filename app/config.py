@@ -31,9 +31,10 @@ class Config:
     BM25_SEARCH_WEIGHT = 0.3
     
     # LLM settings
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")  # openai, gemini, or local
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "nvidia").lower()  # nvidia or local
+    NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
+    NVIDIA_API_BASE_URL = os.getenv("NVIDIA_API_BASE_URL", "https://integrate.api.nvidia.com/v1")
+    NVIDIA_LLM_MODEL = os.getenv("NVIDIA_LLM_MODEL", "meta/llama-4-maverick-17b-128e-instruct")
     LOCAL_LLM_MODEL = os.getenv("LOCAL_LLM_MODEL", "mistral")
     
     # API settings

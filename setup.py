@@ -46,14 +46,14 @@ def setup_project():
     if not Path(".env").exists():
         with open(".env", 'w') as f:
             f.write("""# Add your API keys here
-OPENAI_API_KEY=
-GEMINI_API_KEY=
-LLM_PROVIDER=openai
+NVIDIA_API_KEY=
+NVIDIA_API_BASE_URL=https://integrate.api.nvidia.com/v1
+LLM_PROVIDER=nvidia
 API_HOST=0.0.0.0
 API_PORT=8000
 LOG_LEVEL=INFO
 """)
-        print("Created .env file. Please add your API keys.")
+        print("Created .env file. Please add your NVIDIA API key.")
     
     print("\nSetup complete!")
     print("\nNext steps:")

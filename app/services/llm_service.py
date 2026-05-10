@@ -1,16 +1,16 @@
 from openai import OpenAI
-import os
 import logging
+from app.config import config
 
 logger = logging.getLogger(__name__)
 
 class LLMService:
     def __init__(self):
         self.client = OpenAI(
-            api_key=os.getenv("NVIDIA_API_KEY"),
-            base_url="https://integrate.api.nvidia.com/v1"
+            api_key=config.NVIDIA_API_KEY,
+            base_url=config.NVIDIA_API_BASE_URL,
         )
-        self.model = "meta/llama-4-maverick-17b-128e-instruct"
+        self.model = config.NVIDIA_LLM_MODEL
 
     def generate_response(self, question, context_chunks):
         try:

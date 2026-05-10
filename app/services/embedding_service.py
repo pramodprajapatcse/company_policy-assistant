@@ -1,6 +1,7 @@
 from typing import List
 import numpy as np
 import chromadb
+from chromadb.config import Settings as ChromaSettings
 from app.config import config
 import logging
 
@@ -9,16 +10,19 @@ logger = logging.getLogger(__name__)
 
 class EmbeddingService:
     def __init__(self):
+        self.model = None
+        self.vector_dimension = None
+
+        # Disable Chroma telemetry to avoid posthog compatibility errors
+        self.client = chromadb.PersistentClient(
+            path=str(config.VECTOR_DB_PATH),
+            settings=ChromaSettings(anonymized_telemetry=False),
+        )
+
         # Load embedding model
         self.model = self._load_embedding_model()
-        self.vector_dimension = None
         if hasattr(self.model, "get_sentence_embedding_dimension"):
             self.vector_dimension = self.model.get_sentence_embedding_dimension()
-
-        # ✅ NEW ChromaDB client (FIXED)
-        self.client = chromadb.PersistentClient(
-            path=str(config.VECTOR_DB_PATH)
-        )
 
         # Create or get collection
         self.collection = self.client.get_or_create_collection(
@@ -29,16 +33,30 @@ class EmbeddingService:
         logger.info("Embedding service initialized successfully")
 
     def _load_embedding_model(self):
-        if config.LLM_PROVIDER == "openai" and config.OPENAI_API_KEY:
-            from langchain.embeddings import OpenAIEmbeddings
+        if config.LLM_PROVIDER.lower() == "nvidia" and config.NVIDIA_API_KEY:
+            try:
+                from langchain_community.embeddings import OpenAIEmbeddings
 
-            logger.info("Using OpenAI embeddings for vector generation")
-            return OpenAIEmbeddings(
-                openai_api_key=config.OPENAI_API_KEY,
-                model="text-embedding-3-small"
+                logger.info("Using NVIDIA embeddings via OpenAI-compatible wrapper")
+                return OpenAIEmbeddings(
+                    openai_api_key=config.NVIDIA_API_KEY,
+                    openai_api_base=config.NVIDIA_API_BASE_URL,
+                    model="text-embedding-3-small"
+                )
+            except Exception as e:
+                logger.warning(
+                    "NVIDIA embeddings unavailable or not supported in this environment, falling back to local embeddings: %s",
+                    e,
+                )
+
+        if config.LLM_PROVIDER.lower() == "nvidia":
+            logger.warning(
+                "NVIDIA provider requested but NVIDIA_API_KEY is missing or invalid. Using local embeddings instead."
             )
 
-        # Fallback to local sentence-transformers model
+        return self._load_local_model()
+
+    def _load_local_model(self):
         from sentence_transformers import SentenceTransformer
 
         logger.info(f"Loading local sentence-transformers model: {config.EMBEDDING_MODEL}")
@@ -66,7 +84,16 @@ class EmbeddingService:
             metadatas = [doc.get("metadata", {}) for doc in documents]
 
             # Generate embeddings
-            embeddings = self.generate_embeddings(texts)
+            try:
+                embeddings = self.generate_embeddings(texts)
+            except Exception as e:
+                logger.warning("Embedding generation failed: %s", e)
+                if config.LLM_PROVIDER.lower() == "nvidia":
+                    logger.info("Falling back to local embeddings and retrying")
+                    self.model = self._load_local_model()
+                    embeddings = self.generate_embeddings(texts)
+                else:
+                    raise
 
             # Add to ChromaDB
             self.collection.add(

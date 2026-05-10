@@ -817,3 +817,4 @@ if not st.session_state.authenticated:
     auth_page()
 else:
     main_app()
+    
