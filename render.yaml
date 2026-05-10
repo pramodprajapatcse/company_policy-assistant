@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: company-policy-assistant
+    runtime: docker
+    plan: starter
+    dockerfile: ./docker/Dockerfile
+    dockerfilePath: ./docker/Dockerfile
+    env:
+      - key: NVIDIA_API_KEY
+        sync: false
+    healthCheckPath: /api/v1/health
+    healthCheckInterval: 30
