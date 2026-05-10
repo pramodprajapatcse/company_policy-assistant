@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahindra Rise - AI Policy Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-industry"></i>
+                <h1>Mahindra Rise</h1>
+            </div>
+            <p class="subtitle">AI Policy Assistant</p>
+        </header>
+
+        <main>
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm your AI Policy Assistant. I can help you with questions about company policies including HR, IT security, procurement, travel, and more. What would you like to know?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="input-group">
+                        <input type="text" id="user-input" placeholder="Ask me about company policies..." autocomplete="off">
+                        <button id="send-button" class="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="loading" id="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <span>Thinking...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="policy-categories">
+                    <h3><i class="fas fa-list"></i> Policy Categories</h3>
+                    <ul>
+                        <li><i class="fas fa-users"></i> HR Policies</li>
+                        <li><i class="fas fa-shield-alt"></i> IT Security</li>
+                        <li><i class="fas fa-shopping-cart"></i> Procurement</li>
+                        <li><i class="fas fa-plane"></i> Travel & Reimbursement</li>
+                        <li><i class="fas fa-hard-hat"></i> Safety & Compliance</li>
+                        <li><i class="fas fa-handshake"></i> Code of Conduct</li>
+                    </ul>
+                </div>
+
+                <div class="quick-questions">
+                    <h3><i class="fas fa-lightbulb"></i> Quick Questions</h3>
+                    <div class="question-tags">
+                        <span class="tag" onclick="askQuestion('What is the leave policy?')">Leave Policy</span>
+                        <span class="tag" onclick="askQuestion('How do I request reimbursement?')">Reimbursement</span>
+                        <span class="tag" onclick="askQuestion('What are the IT security guidelines?')">IT Security</span>
+                        <span class="tag" onclick="askQuestion('How does procurement work?')">Procurement</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
