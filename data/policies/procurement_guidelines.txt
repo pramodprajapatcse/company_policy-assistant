@@ -1,0 +1,138 @@
+==========================================
+PROCUREMENT POLICY & GUIDELINES
+Version: 5.0 | Effective Date: January 1, 2024
+==========================================
+
+SECTION 1: PROCUREMENT PRINCIPLES
+----------------------------------------
+
+1.1 CORE PRINCIPLES
+- Transparency: All procurements must be documented
+- Fair Competition: Minimum 3 vendor quotes required
+- Cost Optimization: Best value, not lowest price
+- Compliance: Adherence to legal and regulatory requirements
+- Sustainability: Preference to environmentally friendly options
+
+1.2 PROCUREMENT HIERARCHY
+- Direct Purchase: Up to ₹10,000
+- Limited Tender: ₹10,001 - ₹50,000
+- Open Tender: ₹50,001 - ₹5,00,000
+- Global Tender: Above ₹5,00,000
+- Strategic Sourcing: Long-term contracts >1 year
+
+SECTION 2: PURCHASE AUTHORIZATION
+----------------------------------------
+
+2.1 FINANCIAL AUTHORITY MATRIX
+- Up to ₹10,000: Self-approval (with budget availability)
+- ₹10,001 - ₹50,000: Department Head approval
+- ₹50,001 - ₹2,00,000: BU Head approval
+- ₹2,00,001 - ₹10,00,000: CFO approval
+- Above ₹10,00,000: CEO approval + Board ratification
+
+2.2 PURCHASE REQUEST PROCESS
+- Step 1: Create PR in ERP system with specifications
+- Step 2: Budget verification by Finance
+- Step 3: Technical evaluation by user department
+- Step 4: Commercial evaluation by Procurement
+- Step 5: Approval as per authorization matrix
+- Timeline: 5-15 working days based on value
+
+SECTION 3: VENDOR MANAGEMENT
+----------------------------------------
+
+3.1 VENDOR REGISTRATION
+- Mandatory: All vendors must be registered
+- Documentation: GST, PAN, MSME certificate
+- Evaluation: Technical, financial, compliance check
+- Registration validity: 3 years with annual review
+- Blacklisting: For quality issues or ethical violations
+
+3.2 VENDOR EVALUATION CRITERIA
+- Quality: 30% weightage
+- Price: 30% weightage
+- Delivery: 20% weightage
+- Service: 10% weightage
+- Compliance: 10% weightage
+- Minimum qualifying score: 70%
+
+SECTION 4: TENDERING PROCESS
+----------------------------------------
+
+4.1 REQUEST FOR PROPOSAL (RFP)
+- Scope definition: Clear specifications and deliverables
+- Timeline: 15-30 days for vendor responses
+- Technical bid: Opened first by technical committee
+- Commercial bid: Opened after technical approval
+- Negotiation: Allowed only on commercial terms
+
+4.2 EVALUATION COMMITTEE
+- Minimum 3 members from different departments
+- Independent evaluator for high-value contracts
+- Conflict of interest declaration required
+- Scoring: Weighted average method
+- Recommendation: Detailed evaluation report
+
+SECTION 5: CONTRACT MANAGEMENT
+----------------------------------------
+
+5.1 CONTRACT TYPES
+- Fixed Price: Clear deliverables, no price variation
+- Time & Material: Hourly/daily rates for services
+- Rate Contract: Pre-negotiated rates for repeat purchases
+- Turnkey: Complete solution including installation
+- Framework Agreement: Long-term, call-off basis
+
+5.2 CONTRACT TERMS
+- Duration: Typically 1-3 years
+- Renewal: Automatic unless terminated with 90 days notice
+- Termination: For cause (immediate) or convenience (30 days)
+- Penalties: Up to 10% for delayed delivery
+- Warranty: Minimum 12 months for equipment
+
+SECTION 6: SPECIAL PROCUREMENT CATEGORIES
+----------------------------------------
+
+6.1 IT HARDWARE & SOFTWARE
+- Standardization: Approved vendor list only
+- Software licenses: Enterprise agreements preferred
+- Data security: ISO 27001 certified vendors
+- Cloud services: Restricted to approved providers
+- Maintenance: AMC mandatory for all hardware
+
+6.2 CAPITAL EQUIPMENT
+- ROI analysis: Mandatory for >₹5,00,000
+- Lifecycle cost: Include maintenance for 5 years
+- Installation: Vendor must provide training
+- Spare parts: Availability commitment for 10 years
+- Warranty extension: Optional with cost-benefit analysis
+
+6.3 SERVICES
+- Statement of Work: Detailed scope mandatory
+- Key Personnel: Named resources with CVs
+- Service Levels: SLAs with penalties
+- Confidentiality: NDA mandatory
+- IP Rights: Company retains all intellectual property
+
+SECTION 7: ETHICS & COMPLIANCE
+----------------------------------------
+
+7.1 CODE OF CONDUCT
+- No acceptance of gifts >₹2,500 from vendors
+- Mandatory disclosure of conflicts of interest
+- Whistleblower policy for violations
+- Anti-bribery compliance
+- Annual ethics training for all procurement staff
+
+7.2 DOCUMENT RETENTION
+- Purchase orders: 7 years
+- Contracts: 10 years after expiry
+- Tender documents: 5 years
+- Vendor evaluations: 3 years
+- Audit trails: Mandatory in ERP system
+
+==========================================
+Document ID: PROC-POL-2024-003
+Last Updated: December 20, 2023
+Next Review: December 2024
+==========================================

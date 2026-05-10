@@ -1,0 +1,107 @@
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
+import time
+import uuid
+from app.models.schemas import QueryRequest, QueryResponse, RetrievedChunk
+from app.services.retrieval_service import RetrievalService
+from app.services.llm_service import LLMService
+from app.utils.logger import logger
+import logging
+
+router = APIRouter()
+
+# Service instances (will be initialized in main)
+retrieval_service = None
+llm_service = None
+
+def init_services(retrieval, llm):
+    global retrieval_service, llm_service
+    retrieval_service = retrieval
+    llm_service = llm
+
+@router.post("/query", response_model=QueryResponse)
+async def query_policy(request: QueryRequest):
+    """Process a policy query"""
+    start_time = time.time()
+    
+    try:
+        # Generate unique query ID
+        query_id = str(uuid.uuid4())
+        
+        # Log incoming query
+        logger.info(f"Query {query_id} from user {request.user_id}: {request.question}")
+        
+        # Check if query is relevant to policy domain
+        if not retrieval_service.is_relevant_query(request.question):
+            logger.info(f"Query {query_id} rejected - out of domain")
+            return QueryResponse(
+                question=request.question,
+                answer="I'm designed to answer questions about company policies only. Please ask about HR, leave, procurement, travel, safety, IT security, or code of conduct policies.",
+                sources=[],
+                is_relevant=False,
+                response_time_ms=(time.time() - start_time) * 1000
+            )
+        
+        # Retrieve relevant chunks
+        top_k = request.top_k or 5
+        retrieved_chunks = retrieval_service.hybrid_search(
+            request.question,
+            top_k=top_k
+        )
+        
+        # If no relevant chunks found
+        if not retrieved_chunks:
+            logger.info(f"Query {query_id} - no relevant policies found")
+            return QueryResponse(
+                question=request.question,
+                answer="Requested information is not available in official policy documents.",
+                sources=[],
+                is_relevant=True,
+                response_time_ms=(time.time() - start_time) * 1000
+            )
+        
+        # Generate response using LLM
+        answer = llm_service.generate_response(
+            request.question,
+            retrieved_chunks
+        )
+        
+        # Format sources
+        sources = [
+            RetrievedChunk(
+                content=chunk["content"],
+                document_name=chunk["metadata"].get("document_name", "Unknown"),
+                section=chunk["metadata"].get("section", "General"),
+                page_number=chunk["metadata"].get("page_number"),
+                relevance_score=chunk.get("score", 0.0)
+            )
+            for chunk in retrieved_chunks
+        ]
+        
+        response_time_ms = (time.time() - start_time) * 1000
+        
+        # Log response
+        logger.info(f"Query {query_id} completed in {response_time_ms:.2f}ms")
+        
+        return QueryResponse(
+            question=request.question,
+            answer=answer,
+            sources=sources,
+            is_relevant=True,
+            response_time_ms=response_time_ms
+        )
+        
+    except Exception as e:
+        logger.error(f"Error processing query {query_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy"}
+
+@router.get("/documents")
+async def list_documents():
+    """List available policy documents"""
+    # Implement document listing
+    return {"documents": []}

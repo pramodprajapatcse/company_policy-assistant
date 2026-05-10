@@ -1,0 +1,74 @@
+{
+  "prajapatpramod474@gmail.com": {
+    "full_name": "Pramod Prajapat",
+    "email": "prajapatpramod474@gmail.com",
+    "employee_id": "EMP12345",
+    "department": "Engineering",
+    "phone": "7425922726",
+    "location": "Chandigarh",
+    "bio": "Software Engineer",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "March 2026",
+    "created_at": "2026-03-28T11:42:44.714842"
+  },
+  "prajapat474pramod@gmail.com": {
+    "full_name": "Pramod Prajapat",
+    "email": "prajapat474pramod@gmail.com",
+    "employee_id": "EMP123456",
+    "department": "IT",
+    "phone": "7425922726",
+    "location": "",
+    "bio": "Engineer",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "March 2026",
+    "created_at": "2026-03-28T14:55:42.245929"
+  },
+  "prasuneco@ptaxis": {
+    "full_name": "Pramod Prajapat",
+    "email": "prasuneco@ptaxis",
+    "employee_id": "123456",
+    "department": "Engineering",
+    "phone": "74259222725",
+    "location": "",
+    "bio": "engineer",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "March 2026",
+    "created_at": "2026-03-28T16:26:53.291938"
+  },
+  "abc@ptaxis": {
+    "full_name": "Pramod Prajapat",
+    "email": "abc@ptaxis",
+    "employee_id": "EMP12345678",
+    "department": "Engineering",
+    "phone": "8905483184",
+    "location": "Chandigarh",
+    "bio": "Software Engineer",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "March 2026",
+    "created_at": "2026-03-28T16:38:03.065061"
+  },
+  "abcde@gmail.com": {
+    "full_name": "Pramod",
+    "email": "abcde@gmail.com",
+    "employee_id": "EMP98764",
+    "department": "Engineering",
+    "phone": "7425922725",
+    "location": "Chandigarh",
+    "bio": "",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "March 2026",
+    "created_at": "2026-03-28T16:40:01.889064"
+  },
+  "abc@gmail.com": {
+    "full_name": "abc@gmail.com",
+    "email": "abc@gmail.com",
+    "employee_id": "EMP2345",
+    "department": "Engineering",
+    "phone": "",
+    "location": "",
+    "bio": "",
+    "password": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+    "join_date": "May 2026",
+    "created_at": "2026-05-10T08:22:07.072229"
+  }
+}
