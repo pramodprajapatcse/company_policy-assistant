@@ -1,19 +1,21 @@
 from typing import List, Dict, Any
 import numpy as np
 from rank_bm25 import BM25Okapi
-import nltk
-from nltk.tokenize import word_tokenize
+import re
 from app.services.embedding_service import EmbeddingService
 from app.config import config
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Download NLTK data
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+
+def _simple_word_tokenize(text: str) -> List[str]:
+    """Simple word tokenizer fallback that doesn't require NLTK punkt"""
+    # Convert to lowercase and split on non-alphanumeric characters
+    text = text.lower()
+    # Split on whitespace and punctuation
+    words = re.findall(r"\b[a-z0-9]+\b", text)
+    return words
 
 class RetrievalService:
     def __init__(self, embedding_service: EmbeddingService):
@@ -31,7 +33,8 @@ class RetrievalService:
         
         # Tokenize documents in a memory-efficient way
         for i, doc in enumerate(documents):
-            self.tokenized_docs.append(word_tokenize(doc["content"].lower()))
+            # Use simple tokenizer to avoid NLTK punkt_tab dependency issues
+            self.tokenized_docs.append(_simple_word_tokenize(doc["content"]))
             # Periodic cleanup to avoid memory buildup during tokenization
             if (i + 1) % 20 == 0:
                 gc.collect()

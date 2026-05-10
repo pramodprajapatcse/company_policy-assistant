@@ -12,10 +12,13 @@ from app.api.auth_routes import router as auth_router
 import logging
 import nltk
 
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+# Download required NLTK data for tokenization
+for resource in ['tokenizers/punkt', 'tokenizers/punkt_tab']:
+    try:
+        nltk.data.find(resource)
+    except LookupError:
+        resource_name = resource.split('/')[-1]
+        nltk.download(resource_name, quiet=True)
 
 # Setup logging
 setup_logging()
