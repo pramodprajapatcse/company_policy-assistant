@@ -48,30 +48,44 @@ class ChatApp {
             this.hideLoading();
             this.addMessage('Sorry, I encountered an error. Please try again.', 'bot');
             console.error('API Error:', error);
+            console.error('Full error details:', {
+                message: error.message,
+                status: error.status,
+                response: error.response
+            });
         }
     }
 
     async callAPI(question) {
-        const response = await fetch(`${API_BASE_URL}/query`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                question: question,
-                user_id: 'anonymous',
-                top_k: 5
-            })
-        });
+        try {
+            console.log('Calling API:', `${API_BASE_URL}/query`);
+            const response = await fetch(`${API_BASE_URL}/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: question,
+                    user_id: 'anonymous',
+                    top_k: 5
+                })
+            });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
+            console.log('API Response Status:', response.status, response.statusText);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error Response:', errorText);
+                throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('API Response Data:', data);
+            return data.answer || 'I received your question but couldn\'t generate a response.';
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
         }
-
-        const data = await response.json();
-        return data.answer || 'I received your question but couldn\'t generate a response.';
-    }
 
     addMessage(content, type) {
         const messageDiv = document.createElement('div');
