@@ -86,6 +86,7 @@ class ChatApp {
             console.error('Fetch error:', error);
             throw error;
         }
+    }
 
     addMessage(content, type) {
         const messageDiv = document.createElement('div');
