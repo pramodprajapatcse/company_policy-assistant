@@ -35,14 +35,11 @@ class ChatApp {
         this.showLoading();
 
         try {
-            // Call backend API
-            const response = await this.callAPI(message);
+            // Call backend API (streaming handles message display)
+            await this.callAPI(message);
 
             // Hide loading
             this.hideLoading();
-
-            // Add bot response
-            this.addMessage(response, 'bot');
 
         } catch (error) {
             this.hideLoading();
