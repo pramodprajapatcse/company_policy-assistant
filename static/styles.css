@@ -56,6 +56,12 @@ header {
     background: transparent;
 }
 
+.logo-text,
+.logo h1,
+.logo-tagline {
+    display: none;
+}
+
 .subtitle {
     color: var(--mahindra-gray);
     font-size: 0.95rem;
