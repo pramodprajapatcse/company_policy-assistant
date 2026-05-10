@@ -14,7 +14,14 @@ class LLMService:
 
     def generate_response(self, question, context_chunks):
         try:
+            logger.info(f"Generating response for question with {len(context_chunks)} context chunks")
+            
+            if not context_chunks:
+                logger.warning("No context chunks provided")
+                return "I could not find relevant information to answer your question."
+            
             context = self._format_context(context_chunks)
+            logger.info(f"Context formatted, length: {len(context)}")
 
             prompt = f"""
 You are an AI assistant for company policies.
@@ -31,6 +38,7 @@ Instructions:
 - Be concise and professional
 """
 
+            logger.info(f"Calling NVIDIA LLM API with model: {self.model}")
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -40,15 +48,31 @@ Instructions:
                 temperature=0.1,
                 max_tokens=500
             )
-
-            return response.choices[0].message.content
+            
+            answer = response.choices[0].message.content
+            logger.info(f"LLM Response generated successfully")
+            return answer
 
         except Exception as e:
-            logger.error(f"NVIDIA LLM Error: {e}")
-            return f"Error: {str(e)}"
+            error_msg = f"NVIDIA LLM Error: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            print(f"[LLM ERROR] {error_msg}")
+            raise  # Re-raise so it can be caught by the route handler
 
     def _format_context(self, context):
-        return "\n\n".join([
-            f"[{i}] {c['metadata'].get('document_name')} - {c['metadata'].get('section')}\n{c['content']}"
-            for i, c in enumerate(context, 1)
-        ])
+        try:
+            formatted = []
+            for i, c in enumerate(context, 1):
+                try:
+                    metadata = c.get('metadata', {}) if isinstance(c, dict) else {}
+                    content = c.get('content', '') if isinstance(c, dict) else str(c)
+                    doc_name = metadata.get('document_name', 'Unknown Document')
+                    section = metadata.get('section', 'General')
+                    formatted.append(f"[{i}] {doc_name} - {section}\n{content}")
+                except Exception as e:
+                    logger.warning(f"Error formatting chunk {i}: {e}")
+                    formatted.append(f"[{i}] Error formatting this chunk")
+            return "\n\n".join(formatted)
+        except Exception as e:
+            logger.error(f"Error in _format_context: {e}", exc_info=True)
+            raise

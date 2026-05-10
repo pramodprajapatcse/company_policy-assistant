@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 import time
 import uuid
+import traceback
 from app.models.schemas import QueryRequest, QueryResponse, RetrievedChunk
 from app.services.retrieval_service import RetrievalService
 from app.services.llm_service import LLMService
@@ -27,6 +28,11 @@ async def query_policy(request: QueryRequest):
     try:
         # Generate unique query ID
         query_id = str(uuid.uuid4())
+        
+        # Check if services are initialized
+        if retrieval_service is None or llm_service is None:
+            logger.error("Services not initialized")
+            raise Exception("Services not initialized. This may happen if documents failed to load during startup.")
         
         # Log incoming query
         logger.info(f"Query {query_id} from user {request.user_id}: {request.question}")
@@ -92,8 +98,10 @@ async def query_policy(request: QueryRequest):
         )
         
     except Exception as e:
-        logger.error(f"Error processing query {query_id}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        error_traceback = traceback.format_exc()
+        logger.error(f"Error processing query {query_id}: {str(e)}\n{error_traceback}")
+        print(f"[BACKEND ERROR] {str(e)}\n{error_traceback}")  # Also print to stdout for Render logs
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 @router.get("/health")
 async def health_check():

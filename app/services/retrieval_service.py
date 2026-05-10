@@ -48,7 +48,7 @@ class RetrievalService:
         if not self.bm25_index:
             return []
         
-        tokenized_query = word_tokenize(query.lower())
+        tokenized_query = _simple_word_tokenize(query.lower())
         scores = self.bm25_index.get_scores(tokenized_query)
         
         # Get top k indices
@@ -67,40 +67,49 @@ class RetrievalService:
     
     def hybrid_search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """Combine vector search and BM25 search"""
-        # Vector search
-        vector_results = self.embedding_service.search(query, top_k)
-        
-        # BM25 search
-        bm25_results = self.bm25_search(query, top_k)
-        
-        # Combine results with weights
-        combined_scores = {}
-        
-        for result in vector_results:
-            doc_id = result["metadata"].get("chunk_id", hash(result["content"]))
-            combined_scores[doc_id] = {
-                "result": result,
-                "score": result["score"] * config.VECTOR_SEARCH_WEIGHT
-            }
-        
-        for result in bm25_results:
-            doc_id = result["metadata"].get("chunk_id", hash(result["content"]))
-            if doc_id in combined_scores:
-                combined_scores[doc_id]["score"] += result["score"] * config.BM25_SEARCH_WEIGHT
-            else:
+        try:
+            logger.info(f"Hybrid search for query: {query}")
+            
+            # Vector search
+            vector_results = self.embedding_service.search(query, top_k)
+            logger.info(f"Vector search returned {len(vector_results)} results")
+            
+            # BM25 search
+            bm25_results = self.bm25_search(query, top_k)
+            logger.info(f"BM25 search returned {len(bm25_results)} results")
+            
+            # Combine results with weights
+            combined_scores = {}
+            
+            for result in vector_results:
+                doc_id = result["metadata"].get("chunk_id", hash(result["content"]))
                 combined_scores[doc_id] = {
                     "result": result,
-                    "score": result["score"] * config.BM25_SEARCH_WEIGHT
+                    "score": result["score"] * config.VECTOR_SEARCH_WEIGHT
                 }
-        
-        # Sort by combined score and return top k
-        sorted_results = sorted(
-            combined_scores.values(),
-            key=lambda x: x["score"],
-            reverse=True
-        )[:top_k]
-        
-        return [item["result"] for item in sorted_results]
+            
+            for result in bm25_results:
+                doc_id = result["metadata"].get("chunk_id", hash(result["content"]))
+                if doc_id in combined_scores:
+                    combined_scores[doc_id]["score"] += result["score"] * config.BM25_SEARCH_WEIGHT
+                else:
+                    combined_scores[doc_id] = {
+                        "result": result,
+                        "score": result["score"] * config.BM25_SEARCH_WEIGHT
+                    }
+            
+            # Sort by combined score and return top k
+            sorted_results = sorted(
+                combined_scores.values(),
+                key=lambda x: x["score"],
+                reverse=True
+            )[:top_k]
+            
+            logger.info(f"Hybrid search returning {len(sorted_results)} combined results")
+            return [item["result"] for item in sorted_results]
+        except Exception as e:
+            logger.error(f"Error in hybrid_search: {e}", exc_info=True)
+            raise
     
     def is_relevant_query(self, query: str) -> bool:
         """Check if query is relevant to policy domain"""
@@ -113,7 +122,7 @@ class RetrievalService:
         
         # If no domain keywords found, check BM25 relevance
         if self.bm25_index:
-            tokenized_query = word_tokenize(query_lower)
+            tokenized_query = _simple_word_tokenize(query_lower)
             scores = self.bm25_index.get_scores(tokenized_query)
             if max(scores) > 0:
                 return True
