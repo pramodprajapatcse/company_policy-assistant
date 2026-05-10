@@ -66,10 +66,14 @@ header {
 
 main {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 320px);
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 320px);
     gap: 30px;
     margin-top: 20px;
     align-items: start;
+}
+
+@media (max-width: 768px) {
+    main {
         grid-template-columns: 1fr;
         gap: 20px;
     }
