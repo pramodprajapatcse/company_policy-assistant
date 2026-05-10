@@ -12,8 +12,11 @@ from app.api.auth_routes import router as auth_router
 import logging
 import nltk
 
-nltk.download('punkt')
-nltk.download('punkt_tab')
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
 # Setup logging
 setup_logging()
 logger = logging.getLogger(__name__)

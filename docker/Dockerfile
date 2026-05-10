@@ -2,6 +2,12 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
+# Reduce CPU thread usage in containerized environments
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV TORCH_NUM_THREADS=1
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \

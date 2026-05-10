@@ -1,11 +1,33 @@
 from typing import List
 import numpy as np
-import chromadb
-from chromadb.config import Settings as ChromaSettings
+import posthog
 from app.config import config
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Safe posthog wrapper for Chroma telemetry compatibility
+# Chroma may call posthog.capture(old_style_args), while the installed
+# posthog package expects a newer API signature.
+_original_posthog_capture = posthog.capture
+
+def _safe_posthog_capture(*args, **kwargs):
+    if getattr(posthog, "disabled", False):
+        return None
+    if len(args) == 1:
+        return _original_posthog_capture(*args, **kwargs)
+    if len(args) >= 2:
+        distinct_id = args[0]
+        event_name = args[1]
+        properties = args[2] if len(args) >= 3 else kwargs.get("properties", {})
+        return _original_posthog_capture(event_name, distinct_id=distinct_id, properties=properties)
+    return _original_posthog_capture(*args, **kwargs)
+
+posthog.disabled = True
+posthog.capture = _safe_posthog_capture
+
+import chromadb
+from chromadb.config import Settings as ChromaSettings
 
 
 class EmbeddingService:
