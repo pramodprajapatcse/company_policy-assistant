@@ -4,7 +4,7 @@ langchain-community==0.0.38
 langchain-openai==0.0.8
 
 chromadb==0.4.22
-sentence-transformers==2.2.2
+sentence-transformers==3.0.0
 
 fastapi==0.104.1
 uvicorn==0.24.0
