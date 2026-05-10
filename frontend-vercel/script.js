@@ -52,23 +52,25 @@ class ChatApp {
     }
 
     async callAPI(question) {
-        const response = await fetch(`${API_BASE_URL}/policy/query`, {
+        const response = await fetch(`${API_BASE_URL}/query`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 question: question,
+                user_id: 'anonymous',
                 top_k: 5
             })
         });
 
         if (!response.ok) {
-            throw new Error(`API request failed: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
         const data = await response.json();
-        return data.response || data.answer || 'I received your question but couldn\'t generate a response.';
+        return data.answer || 'I received your question but couldn\'t generate a response.';
     }
 
     addMessage(content, type) {
