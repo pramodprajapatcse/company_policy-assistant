@@ -58,8 +58,8 @@ class ChatApp {
 
     async callAPI(question) {
         try {
-            console.log('Calling API:', `${API_BASE_URL}/query`);
-            const response = await fetch(`${API_BASE_URL}/query`, {
+            console.log('Calling streaming API:', `${API_BASE_URL}/query/stream`);
+            const response = await fetch(`${API_BASE_URL}/query/stream`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,9 +79,60 @@ class ChatApp {
                 throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
-            const data = await response.json();
-            console.log('API Response Data:', data);
-            return data.answer || 'I received your question but couldn\'t generate a response.';
+            // Handle streaming response
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+            let messageDiv = null;
+            let contentDiv = null;
+            let paragraph = null;
+
+            // Create message container immediately
+            messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-robot';
+            avatarDiv.appendChild(icon);
+
+            contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            paragraph = document.createElement('p');
+            contentDiv.appendChild(paragraph);
+
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            this.messagesContainer.appendChild(messageDiv);
+
+            // Scroll to bottom
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]') {
+                            console.log('Stream completed');
+                            return fullResponse;
+                        } else {
+                            fullResponse += data;
+                            paragraph.textContent = fullResponse;
+                            // Scroll to bottom as text updates
+                            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                        }
+                    }
+                }
+            }
+
+            return fullResponse || 'I received your question but couldn\'t generate a response.';
         } catch (error) {
             console.error('Fetch error:', error);
             throw error;

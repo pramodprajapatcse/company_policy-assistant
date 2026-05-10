@@ -38,6 +38,7 @@ Instructions:
 - Use complete sentences and flow naturally from one point to the next
 - Do NOT use bullet points, numbered lists, or asterisks (*)
 - Do NOT include section headers or references
+- Vary your wording and phrasing each time the same question is asked - explain the same information using different words and sentence structures
 - If information is not found in context, say: "I don't have that information in the policy documents"
 - Keep your response helpful and easy to understand
 """
@@ -49,13 +50,19 @@ Instructions:
                     {"role": "system", "content": "You are a policy assistant."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.1,
-                max_tokens=500
+                temperature=0.3,  # Slightly higher for more variety
+                max_tokens=500,
+                stream=True  # Enable streaming
             )
             
-            answer = response.choices[0].message.content
+            # Collect streaming response
+            full_response = ""
+            for chunk in response:
+                if chunk.choices[0].delta.content:
+                    full_response += chunk.choices[0].delta.content
+            
             logger.info(f"LLM Response generated successfully")
-            return answer
+            return full_response
 
         except Exception as e:
             error_msg = f"NVIDIA LLM Error: {str(e)}"
