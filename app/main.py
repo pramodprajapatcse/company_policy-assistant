@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import uvicorn
 from app.api import routes
 from app.services.document_processor import DocumentProcessor
@@ -30,6 +32,9 @@ app = FastAPI(
     description="AI-powered assistant for company policy queries",
     version="1.0.0"
 )
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Add CORS middleware
 app.add_middleware(
@@ -117,6 +122,12 @@ async def shutdown_event():
 
 @app.get("/")
 async def root():
+    """Serve the frontend"""
+    return FileResponse("static/index.html")
+
+
+@app.get("/api")
+async def api_root():
     return {
         "message": "Company Policy RAG Assistant API",
         "version": "1.0.0",

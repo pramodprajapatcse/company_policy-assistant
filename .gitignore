@@ -135,7 +135,6 @@ data/users.json
 logs/
 *.log
 chroma_db/
-tmp_chroma/
 profile_images/
 
 # IDE

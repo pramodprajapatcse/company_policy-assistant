@@ -1,5 +1,5 @@
-// Backend API URL - Update this with your Render backend URL
-const API_BASE_URL = 'https://company-project-f3ae.onrender.com/api/v1';
+// Backend API URL - Relative path since frontend is served from same domain
+const API_BASE_URL = '/api/v1';
 
 class ChatApp {
     constructor() {
