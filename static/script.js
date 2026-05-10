@@ -80,6 +80,7 @@ class ChatApp {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let fullResponse = '';
+            let sources = [];
             let messageDiv = null;
             let contentDiv = null;
             let paragraph = null;
@@ -106,19 +107,42 @@ class ChatApp {
             // Scroll to bottom
             this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
 
+            let buffer = '';
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
                 const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
+                buffer += chunk;
+                const lines = buffer.split('\n');
 
-                for (const line of lines) {
+                // Keep the last incomplete line in the buffer
+                buffer = lines[lines.length - 1];
+
+                for (let i = 0; i < lines.length - 1; i++) {
+                    const line = lines[i];
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
+                        
                         if (data === '[DONE]') {
                             console.log('Stream completed');
+                            // Add sources button if sources exist
+                            if (sources.length > 0) {
+                                this.addSourcesButton(messageDiv, sources);
+                            }
                             return fullResponse;
+                        } else if (data === '[DONE_ANSWER]') {
+                            console.log('Answer streaming complete, waiting for sources');
+                            // Answer is complete, paragraph content is final
+                        } else if (data.startsWith('[SOURCES]') && data.endsWith('[/SOURCES]')) {
+                            console.log('Received sources data');
+                            const sourcesJson = data.slice(9, -10); // Remove [SOURCES] and [/SOURCES]
+                            try {
+                                sources = JSON.parse(sourcesJson);
+                                console.log('Parsed sources:', sources);
+                            } catch (e) {
+                                console.error('Failed to parse sources:', e);
+                            }
                         } else {
                             fullResponse += data;
                             paragraph.textContent = fullResponse;
@@ -134,6 +158,72 @@ class ChatApp {
             console.error('Fetch error:', error);
             throw error;
         }
+    }
+
+    addSourcesButton(messageDiv, sources) {
+        const contentDiv = messageDiv.querySelector('.message-content');
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'sources-button-container';
+        
+        const sourcesButton = document.createElement('button');
+        sourcesButton.className = 'sources-button';
+        sourcesButton.innerHTML = '<i class="fas fa-book"></i> Sources (' + sources.length + ')';
+        
+        sourcesButton.addEventListener('click', () => {
+            this.showSourcesModal(sources);
+        });
+        
+        buttonContainer.appendChild(sourcesButton);
+        contentDiv.appendChild(buttonContainer);
+    }
+
+    showSourcesModal(sources) {
+        let modal = document.getElementById('sources-modal');
+        if (!modal) {
+            // Create modal if it doesn't exist
+            modal = document.createElement('div');
+            modal.id = 'sources-modal';
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+
+        const sourcesList = sources.map((source, index) => `
+            <div class="source-item">
+                <div class="source-header">
+                    <span class="source-number">${index + 1}</span>
+                    <span class="source-document">${source.document_name}</span>
+                    ${source.section ? `<span class="source-section">${source.section}</span>` : ''}
+                </div>
+                <div class="source-content">
+                    ${source.content.substring(0, 300)}${source.content.length > 300 ? '...' : ''}
+                </div>
+                ${source.relevance_score ? `<div class="source-score">Relevance: ${(source.relevance_score * 100).toFixed(0)}%</div>` : ''}
+            </div>
+        `).join('');
+
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Sources</h2>
+                    <button class="modal-close" onclick="document.getElementById('sources-modal').style.display='none'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ${sourcesList}
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     }
 
     addMessage(content, type) {

@@ -148,6 +148,7 @@ async def query_policy_stream(request: QueryRequest):
         # Generate streaming response using LLM
         async def generate_response():
             try:
+                import json
                 # Get the full response first (since NVIDIA API doesn't support true streaming)
                 answer = llm_service.generate_response(
                     request.question,
@@ -159,6 +160,22 @@ async def query_policy_stream(request: QueryRequest):
                     yield f"data: {char}\n\n"
                     await asyncio.sleep(0.02)  # Small delay for typing effect
                 
+                yield "data: [DONE_ANSWER]\n\n"
+                
+                # Format and send sources
+                sources = [
+                    {
+                        "content": chunk["content"],
+                        "document_name": chunk["metadata"].get("document_name", "Unknown"),
+                        "section": chunk["metadata"].get("section", "General"),
+                        "page_number": chunk["metadata"].get("page_number"),
+                        "relevance_score": chunk.get("score", 0.0)
+                    }
+                    for chunk in retrieved_chunks
+                ]
+                
+                sources_json = json.dumps(sources)
+                yield f"data: [SOURCES]{sources_json}[/SOURCES]\n\n"
                 yield "data: [DONE]\n\n"
                 
                 response_time_ms = (time.time() - start_time) * 1000
