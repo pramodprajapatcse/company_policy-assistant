@@ -5,7 +5,6 @@ from datetime import datetime
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-from streamlit_option_menu import option_menu
 import time
 from PIL import Image
 import io

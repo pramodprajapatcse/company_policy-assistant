@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import time
 from datetime import datetime
-from streamlit_option_menu import option_menu
 import plotly.graph_objects as go
 import pandas as pd
 from PIL import Image
@@ -1366,30 +1365,10 @@ def main_app():
     """, unsafe_allow_html=True)
     
     # Navigation Menu
-    selected = option_menu(
-        menu_title=None,
-        options=["Ask Question", "Chat History", "My Profile"],
-        icons=["chat-square-text", "clock-history", "person-circle"],
-        menu_icon="cast",
-        default_index=0,
-        orientation="horizontal",
-        styles={
-            "container": {"padding": "0!important", "background-color": "white", "border-radius": "12px", "margin-bottom": "2rem"},
-            "icon": {"color": MAHINDRA_GRAY, "font-size": "18px"},
-            "nav-link": {
-                "font-size": "15px",
-                "text-align": "center",
-                "margin": "0px",
-                "--hover-color": f"rgba(215,25,32,0.05)",
-                "color": MAHINDRA_GRAY,
-                "font-weight": "500"
-            },
-            "nav-link-selected": {"background-color": MAHINDRA_RED, "color": "white"},
-        }
-    )
+    tab1, tab2, tab3 = st.tabs(["Ask Question", "Chat History", "My Profile"])
     
     # ASK QUESTION PAGE
-    if selected == "Ask Question":
+    with tab1:
         col1, col2 = st.columns([2, 1])
         
         with col1:
@@ -1477,7 +1456,7 @@ def main_app():
                 logout_user()
     
     # CHAT HISTORY PAGE
-    elif selected == "Chat History":
+    with tab2:
         st.markdown("### Chat History")
         
         if st.session_state.chat_history:
@@ -1518,7 +1497,7 @@ def main_app():
             st.info("📭 No chat history yet. Ask a question to get started!")
     
     # MY PROFILE PAGE - FIXED VERSION
-    elif selected == "My Profile":
+    with tab3:
         st.markdown("### My Profile")
         
         col1, col2 = st.columns([1, 2])
