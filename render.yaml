@@ -8,5 +8,5 @@ services:
     env:
       - key: NVIDIA_API_KEY
         sync: false
-    healthCheckPath: /api/v1/health
+    healthCheckPath: /
     healthCheckInterval: 30

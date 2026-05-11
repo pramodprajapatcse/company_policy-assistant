@@ -58,8 +58,17 @@ python -m uvicorn app.main:app --reload
 docker build -f docker/Dockerfile -t company-policy-assistant .
 
 # Run the container
-docker run -e NVIDIA_API_KEY=your_key -p 8000:8000 company-policy-assistant
+docker run -e NVIDIA_API_KEY=your_key -p 8501:8501 company-policy-assistant
 ```
+
+### Render Deployment
+
+Your Render service now launches both the Streamlit frontend and FastAPI backend in a single container.
+- Streamlit UI listens on the Render-assigned `$PORT`
+- FastAPI backend listens locally on port `8000`
+- The Streamlit app uses `http://localhost:8000/api/v1` to call the backend
+
+Set `NVIDIA_API_KEY` in Render dashboard settings before deploying.
 
 ---
 

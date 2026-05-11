@@ -32,5 +32,9 @@ RUN mkdir -p /app/data/processed /app/logs
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Copy startup script and make sure it can run
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
+# Run the startup script that launches FastAPI and Streamlit together
+CMD ["bash", "./start.sh"]
