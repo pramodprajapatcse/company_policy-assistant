@@ -33,7 +33,7 @@ RUN mkdir -p /app/data/processed /app/logs
 EXPOSE 8000
 
 # Copy startup script and make sure it can run
-COPY start.sh ./start.sh
+COPY ./docker/start.sh ./start.sh
 RUN chmod +x ./start.sh
 
 # Run the startup script that launches FastAPI and Streamlit together
