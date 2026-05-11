@@ -24,6 +24,9 @@ tiktoken==0.5.2   # ✅ FIXED
 pypdf==3.17.4
 docx2txt==0.8
 nltk==3.9.2
+pyotp==2.8.0
+phonenumbers==8.13.12
+twilio==8.2.0
 
 streamlit==1.29.0
 plotly==5.18.0
