@@ -60,11 +60,27 @@ class EmbeddingService:
                 from langchain_community.embeddings import OpenAIEmbeddings
 
                 logger.info("Using NVIDIA embeddings via OpenAI-compatible wrapper")
-                return OpenAIEmbeddings(
-                    openai_api_key=config.NVIDIA_API_KEY,
-                    openai_api_base=config.NVIDIA_API_BASE_URL,
-                    model="text-embedding-3-small"
-                )
+                base_urls = [config.NVIDIA_API_BASE_URL]
+                if config.NVIDIA_API_BASE_URL.endswith("/v1"):
+                    base_urls.append(config.NVIDIA_API_BASE_URL[:-3])
+                else:
+                    base_urls.append(config.NVIDIA_API_BASE_URL.rstrip("/") + "/v1")
+
+                last_exc = None
+                for url in base_urls:
+                    try:
+                        model = OpenAIEmbeddings(
+                            openai_api_key=config.NVIDIA_API_KEY,
+                            openai_api_base=url,
+                            model="text-embedding-3-small"
+                        )
+                        logger.info("NVIDIA embeddings configured with base URL: %s", url)
+                        return model
+                    except Exception as e:
+                        last_exc = e
+                        logger.warning("NVIDIA embeddings unavailable at %s: %s", url, e)
+
+                raise last_exc
             except Exception as e:
                 logger.warning(
                     "NVIDIA embeddings unavailable or not supported in this environment, falling back to local embeddings: %s",
@@ -82,7 +98,7 @@ class EmbeddingService:
         from sentence_transformers import SentenceTransformer
 
         logger.info(f"Loading local sentence-transformers model: {config.EMBEDDING_MODEL}")
-        return SentenceTransformer(config.EMBEDDING_MODEL)
+        return SentenceTransformer(config.EMBEDDING_MODEL, device=config.EMBEDDING_DEVICE)
 
     def generate_embeddings(self, texts: List[str]) -> np.ndarray:
         """Generate embeddings for texts"""
