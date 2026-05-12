@@ -25,10 +25,10 @@ python -m app.main &
 backend_pid=$!
 
 # Wait for backend to become available.
-for i in {1..30}; do
+for i in {1..120}; do
   python -c "import urllib.request, urllib.error; urllib.request.urlopen(f'http://127.0.0.1:{API_PORT}/api', timeout=5)" >/dev/null 2>&1 && break || true
   sleep 1
-  if [ "$i" -eq 30 ]; then
+  if [ "$i" -eq 120 ]; then
     echo "Backend did not start in time" >&2
     exit 1
   fi
