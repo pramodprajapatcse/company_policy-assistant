@@ -5,6 +5,7 @@ services:
     plan: starter
     dockerfile: ./docker/Dockerfile
     dockerfilePath: ./docker/Dockerfile
+    startCommand: bash ./docker/start.sh
     env:
       - key: NVIDIA_API_KEY
         sync: false

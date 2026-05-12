@@ -29,8 +29,8 @@ COPY static/ ./static/
 # Create necessary directories
 RUN mkdir -p /app/data/processed /app/logs
 
-# Expose port
-EXPOSE 8000
+# Expose ports for backend and Streamlit frontend
+EXPOSE 8000 8501
 
 # Copy startup script and make sure it can run
 COPY ./docker/start.sh ./start.sh
