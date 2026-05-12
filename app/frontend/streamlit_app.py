@@ -1223,9 +1223,9 @@ def show_forgot_password_flow():
 # ===============================
 # QUERY FUNCTION
 # ===============================
+API_URL = os.environ.get("API_URL", "http://localhost:8000/api/v1")
+
 def query_policy(question):
-    API_URL = "http://localhost:8000/api/v1"
-    
     try:
         start = time.time()
         
@@ -1452,7 +1452,7 @@ def main_app():
                 st.info("No queries yet")
             
             st.markdown("---")
-            if st.button("🚪 Logout", use_container_width=True):
+            if st.button("🚪 Logout", use_container_width=True, key="logout_stats_panel"):
                 logout_user()
     
     # CHAT HISTORY PAGE
@@ -1617,7 +1617,7 @@ def main_app():
                                 st.rerun()
             
             st.markdown("---")
-            if st.button("🚪 Logout", use_container_width=True):
+            if st.button("🚪 Logout", use_container_width=True, key="logout_footer"):
                 logout_user()
     
     # Footer
