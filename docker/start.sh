@@ -11,8 +11,9 @@ fi
 
 export API_PORT
 export API_URL="http://127.0.0.1:${API_PORT}/api/v1"
+export PYTHONPATH="/app"
 
-python app/main.py &
+python -m app.main &
 backend_pid=$!
 
 # Wait for backend to become available.
